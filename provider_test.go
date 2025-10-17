@@ -1,4 +1,4 @@
-package tests
+package filesystem
 
 import (
 	"errors"
@@ -10,21 +10,19 @@ import (
 	"go.uber.org/dig"
 
 	flam "github.com/happyhippyhippo/flam"
-	filesystem "github.com/happyhippyhippo/flam-filesystem"
-	mocks "github.com/happyhippyhippo/flam-filesystem/tests/mocks"
 )
 
 func Test_NewProvider(t *testing.T) {
-	assert.NotNil(t, filesystem.NewProvider())
+	assert.NotNil(t, NewProvider())
 }
 
 func Test_Provider_Id(t *testing.T) {
-	assert.Equal(t, "flam.filesystem.provider", filesystem.NewProvider().Id())
+	assert.Equal(t, "flam.filesystem.provider", NewProvider().Id())
 }
 
 func Test_Provider_Register(t *testing.T) {
 	t.Run("should return error if nil container is passed", func(t *testing.T) {
-		assert.ErrorIs(t, filesystem.NewProvider().Register(nil), flam.ErrNilReference)
+		assert.ErrorIs(t, NewProvider().Register(nil), flam.ErrNilReference)
 	})
 
 	t.Run("should successfully provides Facade", func(t *testing.T) {
@@ -32,14 +30,14 @@ func Test_Provider_Register(t *testing.T) {
 		defer ctrl.Finish()
 
 		container := dig.New()
-		require.NoError(t, filesystem.NewProvider().Register(container))
+		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := mocks.NewFactoryConfig(ctrl)
+		factoryConfig := NewFactoryConfigMock(ctrl)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
 			return factoryConfig
 		}))
 
-		assert.NoError(t, container.Invoke(func(facade filesystem.Facade) {
+		assert.NoError(t, container.Invoke(func(facade Facade) {
 			assert.NotNil(t, facade)
 		}))
 	})
@@ -49,7 +47,7 @@ func Test_Provider_Close(t *testing.T) {
 	t.Run("should return error if nil container is passed", func(t *testing.T) {
 		assert.ErrorIs(
 			t,
-			filesystem.NewProvider().(flam.ClosableProvider).Close(nil),
+			NewProvider().(flam.ClosableProvider).Close(nil),
 			flam.ErrNilReference)
 	})
 
@@ -58,12 +56,12 @@ func Test_Provider_Close(t *testing.T) {
 		defer ctrl.Finish()
 
 		container := dig.New()
-		require.NoError(t, filesystem.NewProvider().Register(container))
+		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := mocks.NewFactoryConfig(ctrl)
+		factoryConfig := NewFactoryConfigMock(ctrl)
 		factoryConfig.
 			EXPECT().
-			Get(filesystem.PathDisks).
+			Get(PathDisks).
 			Return(flam.Bag{"mock": flam.Bag{}}).
 			Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
@@ -71,18 +69,18 @@ func Test_Provider_Close(t *testing.T) {
 		}))
 
 		expectedErr := errors.New("mock error")
-		disk := mocks.NewDisk(ctrl)
+		disk := NewDiskMock(ctrl)
 		disk.EXPECT().Close().Return(expectedErr).Times(1)
 
 		diskCreatorConfig := flam.Bag{"id": "mock"}
-		diskCreator := mocks.NewDiskCreator(ctrl)
+		diskCreator := NewDiskCreatorMock(ctrl)
 		diskCreator.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
 		diskCreator.EXPECT().Create(diskCreatorConfig).Return(disk, nil).Times(1)
-		require.NoError(t, container.Provide(func() filesystem.DiskCreator {
+		require.NoError(t, container.Provide(func() DiskCreator {
 			return diskCreator
-		}, dig.Group(filesystem.DiskCreatorGroup)))
+		}, dig.Group(DiskCreatorGroup)))
 
-		assert.NoError(t, container.Invoke(func(facade filesystem.Facade) error {
+		assert.NoError(t, container.Invoke(func(facade Facade) error {
 			got, e := facade.GetDisk("mock")
 			assert.NotNil(t, got)
 			assert.NoError(t, e)
@@ -92,7 +90,7 @@ func Test_Provider_Close(t *testing.T) {
 
 		assert.ErrorIs(
 			t,
-			filesystem.NewProvider().(flam.ClosableProvider).Close(container),
+			NewProvider().(flam.ClosableProvider).Close(container),
 			expectedErr)
 	})
 
@@ -101,30 +99,30 @@ func Test_Provider_Close(t *testing.T) {
 		defer ctrl.Finish()
 
 		container := dig.New()
-		require.NoError(t, filesystem.NewProvider().Register(container))
+		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := mocks.NewFactoryConfig(ctrl)
+		factoryConfig := NewFactoryConfigMock(ctrl)
 		factoryConfig.
 			EXPECT().
-			Get(filesystem.PathDisks).
+			Get(PathDisks).
 			Return(flam.Bag{"mock": flam.Bag{}}).
 			Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
 			return factoryConfig
 		}))
 
-		disk := mocks.NewDisk(ctrl)
+		disk := NewDiskMock(ctrl)
 		disk.EXPECT().Close().Return(nil).Times(1)
 
 		diskCreatorConfig := flam.Bag{"id": "mock"}
-		diskCreator := mocks.NewDiskCreator(ctrl)
+		diskCreator := NewDiskCreatorMock(ctrl)
 		diskCreator.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
 		diskCreator.EXPECT().Create(diskCreatorConfig).Return(disk, nil).Times(1)
-		require.NoError(t, container.Provide(func() filesystem.DiskCreator {
+		require.NoError(t, container.Provide(func() DiskCreator {
 			return diskCreator
-		}, dig.Group(filesystem.DiskCreatorGroup)))
+		}, dig.Group(DiskCreatorGroup)))
 
-		assert.NoError(t, container.Invoke(func(facade filesystem.Facade) error {
+		assert.NoError(t, container.Invoke(func(facade Facade) error {
 			got, e := facade.GetDisk("mock")
 			assert.NotNil(t, got)
 			assert.NoError(t, e)
@@ -132,6 +130,6 @@ func Test_Provider_Close(t *testing.T) {
 			return e
 		}))
 
-		assert.NoError(t, filesystem.NewProvider().(flam.ClosableProvider).Close(container))
+		assert.NoError(t, NewProvider().(flam.ClosableProvider).Close(container))
 	})
 }

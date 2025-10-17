@@ -12,41 +12,41 @@ func NewProvider() flam.Provider {
 	return &provider{}
 }
 
-func (provider) Id() string {
+func (*provider) Id() string {
 	return providerId
 }
 
-func (provider) Register(
+func (*provider) Register(
 	container *dig.Container,
 ) error {
 	if container == nil {
 		return newErrNilReference("container")
 	}
 
-	var e error
-	provide := func(constructor any, opts ...dig.ProvideOption) bool {
-		e = container.Provide(constructor, opts...)
-		return e == nil
-	}
+	registerer := flam.NewRegisterer()
+	registerer.Queue(newOsDiskCreator, dig.Group(DiskCreatorGroup))
+	registerer.Queue(newMemoryDiskCreator, dig.Group(DiskCreatorGroup))
+	registerer.Queue(newDiskFactory)
+	registerer.Queue(newFacade)
 
-	_ = provide(newOsDiskCreator, dig.Group(DiskCreatorGroup)) &&
-		provide(newMemoryDiskCreator, dig.Group(DiskCreatorGroup)) &&
-		provide(newDiskFactory) &&
-		provide(newFacade)
-
-	return e
+	return registerer.Run(container)
 }
 
-func (provider) Close(
+func (provider *provider) Close(
 	container *dig.Container,
 ) error {
 	if container == nil {
 		return newErrNilReference("container")
 	}
 
-	return container.Invoke(func(
-		diskFactory diskFactory,
-	) error {
-		return diskFactory.Close()
-	})
+	executor := flam.NewExecutor()
+	executor.Queue(provider.closeDiskFactory)
+
+	return executor.Run(container)
+}
+
+func (*provider) closeDiskFactory(
+	diskFactory diskFactory,
+) error {
+	return diskFactory.Close()
 }
