@@ -34,10 +34,7 @@ func (m *FactoryConfigMock) EXPECT() *FactoryConfigMockRecorder {
 // Get mocks base method.
 func (m *FactoryConfigMock) Get(path string, def ...any) flam.Bag {
 	m.ctrl.T.Helper()
-	varargs := []any{path}
-	for _, a := range def {
-		varargs = append(varargs, a)
-	}
+	varargs := append([]any{path}, def...)
 	ret := m.ctrl.Call(m, "Get", varargs...)
 	ret0, _ := ret[0].(flam.Bag)
 	return ret0
