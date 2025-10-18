@@ -21,10 +21,10 @@ func Test_Facade_HasDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -40,10 +40,10 @@ func Test_Facade_HasDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{"mock": flam.Bag{}}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -59,16 +59,16 @@ func Test_Facade_HasDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
-		disk := NewDiskMock(ctrl)
+		diskMock := NewDiskMock(ctrl)
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
-			require.NoError(t, facade.AddDisk("mock", disk))
+			require.NoError(t, facade.AddDisk("mock", diskMock))
 
 			assert.True(t, facade.HasDisk("mock"))
 		}))
@@ -84,10 +84,10 @@ func Test_Facade_ListDisks(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -106,10 +106,10 @@ func Test_Facade_ListDisks(t *testing.T) {
 			"gamma": flam.Bag{},
 			"alpha": flam.Bag{},
 			"beta":  flam.Bag{}}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -132,16 +132,16 @@ func Test_Facade_ListDisks(t *testing.T) {
 			"alpha": flam.Bag{},
 			"beta":  flam.Bag{},
 		}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(2)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(2)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
-		disk := NewDiskMock(ctrl)
+		diskMock := NewDiskMock(ctrl)
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
-			require.NoError(t, facade.AddDisk("delta", disk))
+			require.NoError(t, facade.AddDisk("delta", diskMock))
 
 			assert.ElementsMatch(
 				t,
@@ -160,10 +160,10 @@ func Test_Facade_GetDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -181,10 +181,10 @@ func Test_Facade_GetDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{"disk": flam.Bag{"driver": DiskDriverOS}}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -204,10 +204,10 @@ func Test_Facade_GetDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{"disk": flam.Bag{"driver": DiskDriverMemory}}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -227,10 +227,10 @@ func Test_Facade_GetDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		disk := afero.NewMemMapFs()
@@ -253,9 +253,9 @@ func Test_Facade_AddDisk(t *testing.T) {
 		container := dig.New()
 		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := NewFactoryConfigMock(ctrl)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -271,16 +271,16 @@ func Test_Facade_AddDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{"disk": flam.Bag{}}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
-		disk := NewDiskMock(ctrl)
+		diskMock := NewDiskMock(ctrl)
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
-			assert.ErrorIs(t, facade.AddDisk("disk", disk), flam.ErrDuplicateResource)
+			assert.ErrorIs(t, facade.AddDisk("disk", diskMock), flam.ErrDuplicateResource)
 		}))
 	})
 
@@ -292,19 +292,19 @@ func Test_Facade_AddDisk(t *testing.T) {
 		require.NoError(t, NewProvider().Register(container))
 
 		config := flam.Bag{}
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.EXPECT().Get(PathDisks).Return(config).Times(1)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.EXPECT().Get(PathDisks).Return(config).Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
-		disk := NewDiskMock(ctrl)
+		diskMock := NewDiskMock(ctrl)
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
-			require.NoError(t, facade.AddDisk("disk", disk))
+			require.NoError(t, facade.AddDisk("disk", diskMock))
 
 			got, e := facade.GetDisk("disk")
-			assert.Same(t, got, disk)
+			assert.Same(t, got, diskMock)
 			assert.NoError(t, e)
 		}))
 	})

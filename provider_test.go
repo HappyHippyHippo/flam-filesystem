@@ -32,9 +32,9 @@ func Test_Provider_Register(t *testing.T) {
 		container := dig.New()
 		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := NewFactoryConfigMock(ctrl)
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) {
@@ -58,26 +58,26 @@ func Test_Provider_Close(t *testing.T) {
 		container := dig.New()
 		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.
 			EXPECT().
 			Get(PathDisks).
 			Return(flam.Bag{"mock": flam.Bag{}}).
 			Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
 		expectedErr := errors.New("mock error")
-		disk := NewDiskMock(ctrl)
-		disk.EXPECT().Close().Return(expectedErr).Times(1)
+		diskMock := NewDiskMock(ctrl)
+		diskMock.EXPECT().Close().Return(expectedErr).Times(1)
 
 		diskCreatorConfig := flam.Bag{"id": "mock"}
-		diskCreator := NewDiskCreatorMock(ctrl)
-		diskCreator.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
-		diskCreator.EXPECT().Create(diskCreatorConfig).Return(disk, nil).Times(1)
+		diskCreatorMock := NewDiskCreatorMock(ctrl)
+		diskCreatorMock.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
+		diskCreatorMock.EXPECT().Create(diskCreatorConfig).Return(diskMock, nil).Times(1)
 		require.NoError(t, container.Provide(func() DiskCreator {
-			return diskCreator
+			return diskCreatorMock
 		}, dig.Group(DiskCreatorGroup)))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) error {
@@ -101,25 +101,25 @@ func Test_Provider_Close(t *testing.T) {
 		container := dig.New()
 		require.NoError(t, NewProvider().Register(container))
 
-		factoryConfig := NewFactoryConfigMock(ctrl)
-		factoryConfig.
+		factoryConfigMock := NewFactoryConfigMock(ctrl)
+		factoryConfigMock.
 			EXPECT().
 			Get(PathDisks).
 			Return(flam.Bag{"mock": flam.Bag{}}).
 			Times(1)
 		require.NoError(t, container.Provide(func() flam.FactoryConfig {
-			return factoryConfig
+			return factoryConfigMock
 		}))
 
-		disk := NewDiskMock(ctrl)
-		disk.EXPECT().Close().Return(nil).Times(1)
+		diskMock := NewDiskMock(ctrl)
+		diskMock.EXPECT().Close().Return(nil).Times(1)
 
 		diskCreatorConfig := flam.Bag{"id": "mock"}
-		diskCreator := NewDiskCreatorMock(ctrl)
-		diskCreator.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
-		diskCreator.EXPECT().Create(diskCreatorConfig).Return(disk, nil).Times(1)
+		diskCreatorMock := NewDiskCreatorMock(ctrl)
+		diskCreatorMock.EXPECT().Accept(diskCreatorConfig).Return(true).Times(1)
+		diskCreatorMock.EXPECT().Create(diskCreatorConfig).Return(diskMock, nil).Times(1)
 		require.NoError(t, container.Provide(func() DiskCreator {
-			return diskCreator
+			return diskCreatorMock
 		}, dig.Group(DiskCreatorGroup)))
 
 		assert.NoError(t, container.Invoke(func(facade Facade) error {
