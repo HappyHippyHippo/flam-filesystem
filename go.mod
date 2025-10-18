@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/golang/mock v1.6.0
-	github.com/happyhippyhippo/flam v0.2.1
+	github.com/happyhippyhippo/flam v0.3.0
 	github.com/spf13/afero v1.15.0
 	go.uber.org/dig v1.19.0
 )
